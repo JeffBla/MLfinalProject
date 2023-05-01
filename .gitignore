@@ -1,0 +1,11 @@
+# vscode setting
+.vscode
+__pycache__
+
+# environment
+venv
+
+# static
+img
+outputExcel
+data2
