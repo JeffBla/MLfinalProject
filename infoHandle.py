@@ -18,6 +18,7 @@ for key in dataDict:
     TempDataSet[key].drop(0, inplace=True)
     TempDataSet[key] = TempDataSet[key].astype('float')
 
+TempDataSet = pd.read_excel('./outputExcel/tempData.xlsx')
 distMeanTemp_winterMonth = None
 for district, df in zip(TempDataSet.keys(), TempDataSet.values()):
     df_winterMonth = df.loc[[1, 2]]
@@ -31,6 +32,21 @@ for district, df in zip(TempDataSet.keys(), TempDataSet.values()):
             pd.DataFrame(df_winterMonth.mean(), columns=[district])
         ],
                                              axis=1)
+
+# distMeanTemp_winterMonth = None
+# for district, df in zip(TempDataSet.keys(), TempDataSet.values()):
+#     df_winterMonth = df.loc[[1, 2]]
+#     df_winterMonth.loc[12] = df.loc[12].shift(1)
+#     if distMeanTemp_winterMonth is None:
+#         distMeanTemp_winterMonth = pd.DataFrame(df_winterMonth.mean(),
+#                                                 columns=[district])
+#     else:
+#         distMeanTemp_winterMonth = pd.concat([
+#             distMeanTemp_winterMonth,
+#             pd.DataFrame(df_winterMonth.mean(), columns=[district])
+#         ],
+#                                              axis=1)
+
 # distMeanTemp_Yearly = None
 # for district, df in zip(TempDataSet.keys(), TempDataSet.values()):
 #     if distMeanTemp_Yearly is None:

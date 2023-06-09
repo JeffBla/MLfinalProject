@@ -6,6 +6,8 @@ __pycache__
 venv
 
 # static
-img
 outputExcel
 data2
+
+# zip file
+*.zip

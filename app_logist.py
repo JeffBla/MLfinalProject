@@ -7,7 +7,6 @@ import cufflinks as cf
 import datapane as dp
 
 from excelImport import fileToDistrict
-# import temp
 
 cf.go_offline()
 
@@ -60,7 +59,7 @@ ANBUYearAnalysisFig.add_trace(
 # train model
 tempData_Summer = None
 for key, val in tempDataDist.items():
-    val = val.loc[6:9]
+    val = val.iloc[6:9]
     if '2023' in val.columns:
         val.drop('2023', axis=1, inplace=True)
     val = val.transpose()
@@ -87,8 +86,7 @@ distMeanTemp_warmWinter.reset_index(inplace=True, drop=True)
 distMeanTemp_warmWinter.name = 'warmWinter'
 
 from sklearn.model_selection import train_test_split
-from sklearn.svm import SVC
-from sklearn.model_selection import GridSearchCV
+from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import classification_report
 
 from imblearn.over_sampling import SMOTE
@@ -99,28 +97,17 @@ y = distMeanTemp_warmWinter
 df = X.join(y)
 df.dropna(inplace=True)
 
-X_train, X_test, y_train, y_test = train_test_split(df[[6, 7, 8, 9]],
+X_train, X_test, y_train, y_test = train_test_split(df[[7, 8, 9]],
                                                     df['warmWinter'],
                                                     test_size=0.33)
 
 X_train, y_train = SMOTE().fit_resample(X_train, y_train)
 X_train, y_train = TomekLinks().fit_resample(X_train, y_train)
 
-GridSearchCV
-param_grid = {
-    'C': [1000],
-    'gamma': [1, 0.1, 0.01, 0.001],
-    'kernel': ['rbf', 'poly', 'sigmoid']
-}
-# best 1000, 1, rbf
-grid = GridSearchCV(SVC(), param_grid, refit=True, verbose=2)
-grid.fit(X_train, y_train)
-pred = grid.predict(X_test)
-
 # SVM
-# svm = SVC(C=1000, gamma=1, kernel='rbf')
-# svm.fit(X_train, y_train)
-# pred = svm.predict(X_test)
+logist = LogisticRegression()
+logist.fit(X_train, y_train)
+pred = logist.predict(X_test)
 
 print(classification_report(y_test, pred))
 
