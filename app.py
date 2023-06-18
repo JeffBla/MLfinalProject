@@ -106,7 +106,7 @@ X_train, X_test, y_train, y_test = train_test_split(df[[6, 7, 8, 9]],
 X_train, y_train = SMOTE().fit_resample(X_train, y_train)
 X_train, y_train = TomekLinks().fit_resample(X_train, y_train)
 
-GridSearchCV
+# GridSearchCV
 param_grid = {
     'C': [1000],
     'gamma': [1, 0.1, 0.01, 0.001],

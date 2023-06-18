@@ -7,7 +7,6 @@ import cufflinks as cf
 import datapane as dp
 
 from excelImport import fileToDistrict
-# import temp
 
 cf.go_offline()
 
@@ -60,7 +59,7 @@ ANBUYearAnalysisFig.add_trace(
 # train model
 tempData_Summer = None
 for key, val in tempDataDist.items():
-    val = val.loc[6:9]
+    val = val.iloc[5:8]
     if '2023' in val.columns:
         val.drop('2023', axis=1, inplace=True)
     val = val.transpose()
@@ -87,8 +86,7 @@ distMeanTemp_warmWinter.reset_index(inplace=True, drop=True)
 distMeanTemp_warmWinter.name = 'warmWinter'
 
 from sklearn.model_selection import train_test_split
-from sklearn.svm import SVC
-from sklearn.model_selection import GridSearchCV
+from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import classification_report
 
 from imblearn.over_sampling import SMOTE
@@ -99,27 +97,32 @@ y = distMeanTemp_warmWinter
 df = X.join(y)
 df.dropna(inplace=True)
 
-X_train, X_test, y_train, y_test = train_test_split(df[[6, 7, 8, 9]],
-                                                    df['warmWinter'],
-                                                    test_size=0.33)
+# df_show_isWarmWinter = df[df['warmWinter'] == 1]
+# df_show_notWarmWinter = df[df['warmWinter'] == 0]
+# Plot SVM dataset: X,y
+# fig = go.FigureWidget()
+# fig.add_scatter3d(x=df_show_notWarmWinter[6],
+#                   y=df_show_notWarmWinter[7],
+#                   z=df_show_notWarmWinter[8],
+#                   mode='markers',
+#                   marker={'color': 'red'})
+# fig.add_scatter3d(x=df_show_isWarmWinter[6],
+#                   y=df_show_isWarmWinter[7],
+#                   z=df_show_isWarmWinter[8],
+#                   mode='markers',
+#                   marker={'color': 'blue'})
+# fig.show()
 
-X_train, y_train = SMOTE().fit_resample(X_train, y_train)
-X_train, y_train = TomekLinks().fit_resample(X_train, y_train)
+# X_train, X_test, y_train, y_test = train_test_split(df[[6, 7, 8]],
+#                                                     df['warmWinter'],
+#                                                     test_size=0.33)
 
-# GridSearchCV
-# param_grid = {
-#     'C': [0.1, 1, 10, 100],
-#     'gamma': [1, 0.1, 0.01, 0.001],
-#     'kernel': ['rbf', 'poly', 'sigmoid']
-# }
-# # best 100, 1, rbf
-# grid = GridSearchCV(SVC(), param_grid, refit=True, verbose=2)
-# grid.fit(X_train, y_train)
-# pred = grid.predict(X_test)
+# X_train, y_train = SMOTE().fit_resample(X_train, y_train)
+# X_train, y_train = TomekLinks().fit_resample(X_train, y_train)
 
-# SVM
-svm = SVC(C=100, gamma=1, kernel='rbf')
-svm.fit(X_train, y_train)
-pred = svm.predict(X_test)
-# print(grid.best_estimator_)
-print(classification_report(y_test, pred))
+# # logist
+# logist = LogisticRegression()
+# logist.fit(X_train, y_train)
+# pred = logist.predict(X_train)
+
+# print(classification_report(y_train, pred))

@@ -45,7 +45,8 @@ def plot_yearly_avg_temperature():
         go.Scatter(x=df_year['Year'],
                    y=lr.predict(X),
                    name="slope: %f" % slope))
-
+    fig.update_layout(xaxis=dict(title='Year'),
+                      yaxis=dict(title='Temperature'))
     return fig
 
 
@@ -81,13 +82,49 @@ def plot_winter_avg_temperature():
     winter_avg_temp = df_winter.groupby('Winter_year')['Temperature'].mean()
     X = winter_avg_temp.index.tolist()
     Y = winter_avg_temp
-    return go.Figure(data=go.Scatter(x=X, y=Y, name='winter_avg_temp'))
+    fig = go.Figure(
+        data=go.Scatter(x=X, y=Y, name="Bengal year avg temperature"))
+    fig.update_layout(xaxis=dict(title='Year'),
+                      yaxis=dict(title='Temperature'),
+                      showlegend=True)
+    return fig
 
 
-if __name__ == '__main__':
-    fig0 = plot_yearly_avg_temperature()
-    # fig = boxplot()
-    # fig1 = plot_winter_avg_temperature()
-    fig0.show()
-    # fig.show()
-    # fig1.show()
+def plot_check_warm_winter():
+    df_winter = df_winter_avg_temperature()
+    winter_avg_temp = df_winter.groupby('Winter_year')['Temperature'].mean()
+    mean = winter_avg_temp.mean()
+    std = winter_avg_temp.std()
+    X = winter_avg_temp.index.tolist()
+    Y = winter_avg_temp
+    plt.plot(X, Y, label='winter_avg_temperature')
+    mean_line = np.ones(len(X)) * mean
+    mean_plus_std_line = mean_line + std
+    mean_minus_std_line = mean_line - std
+    plt.plot(X, mean_plus_std_line, label='mean+std')
+    plt.plot(X, mean_line, label='mean')
+    plt.plot(X, mean_minus_std_line, label='mean-std')
+    plt.xlabel('Year')
+    plt.ylabel('Temperature')
+    plt.legend()
+
+
+def plot_check_cut_warm_winter():
+    df_winter = df_winter_avg_temperature()
+    cut_df_winter = df_winter[df_winter['Winter_year'] > 1994]
+    cut_winter_avg_temp = cut_df_winter.groupby(
+        'Winter_year')['Temperature'].mean()
+    mean = cut_winter_avg_temp.mean()
+    std = cut_winter_avg_temp.std()
+    X = cut_winter_avg_temp.index.tolist()
+    Y = cut_winter_avg_temp
+    plt.plot(X, Y, label='cut_winter_avg_temperature')
+    mean_line = np.ones(len(X)) * mean
+    mean_plus_std_line = mean_line + std
+    mean_minus_std_line = mean_line - std
+    plt.plot(X, mean_plus_std_line, label='mean+std')
+    plt.plot(X, mean_line, label='mean')
+    plt.plot(X, mean_minus_std_line, label='mean-std')
+    plt.xlabel('Year')
+    plt.ylabel('Temperature')
+    plt.legend(bbox_to_anchor=(1, 1))
